@@ -8,6 +8,7 @@
 using System;
 
 #if EF5 || EF6
+
 using System.Runtime.Caching;
 
 #elif EFCORE
@@ -20,6 +21,7 @@ namespace Z.EntityFramework.Plus
     public static partial class QueryCacheExtensions
     {
 #if EF5 || EF6
+
         /// <summary>
         ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
         ///     yet, the query is materialized and cached before being returned.
@@ -45,15 +47,12 @@ namespace Z.EntityFramework.Plus
                 item = QueryCacheManager.Cache.AddOrGetExisting(key, item ?? DBNull.Value, policy) ?? item;
                 QueryCacheManager.AddCacheTag(key, tags);
             }
-            else
+            if (item == DBNull.Value)
             {
-                if (item == DBNull.Value)
-                {
-                    item = null;
-                }    
+                item = null;
             }
 
-            return (T) item;
+            return (T)item;
         }
 
         /// <summary>
@@ -89,7 +88,7 @@ namespace Z.EntityFramework.Plus
                 }
             }
 
-            return (T) item;
+            return (T)item;
         }
 
         /// <summary>
@@ -107,6 +106,7 @@ namespace Z.EntityFramework.Plus
         {
             return query.FromCache(QueryCacheManager.DefaultCacheItemPolicy, tags);
         }
+
 #elif EFCORE
         /// <summary>
         ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
@@ -137,7 +137,7 @@ namespace Z.EntityFramework.Plus
                 if (item == DBNull.Value)
                 {
                     item = null;
-                }    
+                }
             }
 
             return (T)item;

@@ -12,12 +12,14 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+
 #if EF5
 using System.Runtime.Caching;
 using System.Data.EntityClient;
 using System.Data.SqlClient;
 
 #elif EF6
+
 using System.Data.Entity.Core.EntityClient;
 using System.Runtime.Caching;
 
@@ -49,6 +51,7 @@ namespace Z.EntityFramework.Plus
         }
 
 #if EF5 || EF6
+
         /// <summary>Gets or sets the cache to use for QueryCacheExtensions extension methods.</summary>
         /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
         public static ObjectCache Cache { get; set; }
@@ -151,7 +154,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets the dictionary cache tags used to store tags and corresponding cached keys.</summary>
         /// <value>The cache tags used to store tags and corresponding cached keys.</value>
-        public static ConcurrentDictionary<string, List<string>> CacheTags { get; }
+        public static ConcurrentDictionary<string, List<string>> CacheTags { get; private set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object use first tag as cache key.
@@ -172,7 +175,7 @@ namespace Z.EntityFramework.Plus
         {
             foreach (var tag in tags)
             {
-                CacheTags.AddOrUpdate(CachePrefix + tag, x => new List<string> {cacheKey}, (x, list) =>
+                CacheTags.AddOrUpdate(CachePrefix + tag, x => new List<string> { cacheKey }, (x, list) =>
                 {
                     if (!list.Contains(cacheKey))
                     {
@@ -185,6 +188,7 @@ namespace Z.EntityFramework.Plus
         }
 
 #if !EFCORE
+
         /// <summary>Expire all cached objects && tag.</summary>
         public static void ExpireAll()
         {
@@ -203,6 +207,7 @@ namespace Z.EntityFramework.Plus
                 Cache.Remove(item);
             }
         }
+
 #endif
 
         /// <summary>Expire all cached keys linked to specified tags.</summary>
@@ -259,11 +264,13 @@ namespace Z.EntityFramework.Plus
 
             var objectQuery = query.GetObjectQuery();
 
-            sb.AppendLine(CachePrefix);
+            //sb.AppendLine(CachePrefix);
+            sb.Append(CachePrefix);
 
             if (IncludeConnectionInCacheKey)
             {
-                sb.AppendLine(GetConnectionStringForCacheKey(query));
+                //sb.AppendLine(GetConnectionStringForCacheKey(query));
+                sb.Append(GetConnectionStringForCacheKey(query));
             }
 #elif EFCORE
             RelationalQueryContext queryContext;
@@ -341,11 +348,11 @@ namespace Z.EntityFramework.Plus
         public static string GetConnectionStringForCacheKey(IQueryable query)
         {
 #if EF5 || EF6
-            var connection = ((EntityConnection) query.GetObjectQuery().Context.Connection).GetStoreConnection();
+            var connection = ((EntityConnection)query.GetObjectQuery().Context.Connection).GetStoreConnection();
 
             // FORCE database name in case "ChangeDatabase()" method is used
-            var connectionString = string.Concat(connection.DataSource ?? "", 
-                Environment.NewLine, 
+            var connectionString = string.Concat(connection.DataSource ?? "",
+                Environment.NewLine,
                 connection.Database ?? "",
                 Environment.NewLine,
                 connection.ConnectionString ?? "");
@@ -363,15 +370,14 @@ namespace Z.EntityFramework.Plus
             var connection = queryContext.Connection.DbConnection;
 
             // FORCE database name in case "ChangeDatabase()" method is used
-            var connectionString = string.Concat(connection.DataSource ?? "", 
-                Environment.NewLine, 
+            var connectionString = string.Concat(connection.DataSource ?? "",
+                Environment.NewLine,
                 connection.Database ?? "",
                 Environment.NewLine,
                 connection.ConnectionString ?? "");
             return connectionString;
         }
 #endif
-
 
         /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
         /// <typeparam name="T">Generic type parameter.</typeparam>

@@ -5,7 +5,6 @@
 // More projects: http://www.zzzprojects.com/
 // Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
-using System;
 using System.Data.Common;
 using System.Linq;
 #if EF5
@@ -63,16 +62,6 @@ new AuditEntry();
                 var name = orginalRecord.GetName(i);
                 var originalValue = orginalRecord.GetValue(i);
                 var currentValue = currentRecord.GetValue(i);
-
-                if (audit.Configuration.UseNullForDBNullValue && originalValue == DBNull.Value)
-                {
-                    originalValue = null;
-                }
-
-                if (audit.Configuration.UseNullForDBNullValue && currentValue == DBNull.Value)
-                {
-                    currentValue = null;
-                }
 
                 var valueRecord = originalValue as DbDataRecord;
                 if (valueRecord != null)

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 #if EF5 || EF6
+
 using System;
 using System.Data.Entity;
 using System.Runtime.Caching;
@@ -24,6 +25,7 @@ namespace Z.EntityFramework.Plus
     public static partial class QueryCacheExtensions
     {
 #if EF5 || EF6
+
         /// <summary>
         ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
         ///     yet, the query is materialized and cached before being returned.
@@ -49,7 +51,7 @@ namespace Z.EntityFramework.Plus
                 QueryCacheManager.AddCacheTag(key, tags);
             }
 
-            return (IEnumerable<T>) item;
+            return (IEnumerable<T>)item;
         }
 
         /// <summary>
@@ -77,7 +79,7 @@ namespace Z.EntityFramework.Plus
                 QueryCacheManager.AddCacheTag(key, tags);
             }
 
-            return (IEnumerable<T>) item;
+            return (IEnumerable<T>)item;
         }
 
         /// <summary>
@@ -95,6 +97,7 @@ namespace Z.EntityFramework.Plus
         {
             return query.FromCache(QueryCacheManager.DefaultCacheItemPolicy, tags);
         }
+
 #elif EFCORE
         /// <summary>
         ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
