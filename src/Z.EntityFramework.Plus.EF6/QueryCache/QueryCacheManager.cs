@@ -241,6 +241,17 @@ namespace Z.EntityFramework.Plus
             Cache.Remove(CachePrefix + tag);
         }
 
+        /// <summary>
+        /// FHT，直接更新缓存
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="cachedObject"></param>
+        public static void UpdateCache(string tag, object cachedObject)
+        {
+            Cache.Add(tag, cachedObject, DefaultCacheItemPolicy);
+        }
+
+
         /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
         /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
         /// <param name="tags">A variable-length parameters list containing tags to create the cache key.</param>
