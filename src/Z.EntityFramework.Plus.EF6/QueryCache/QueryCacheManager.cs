@@ -12,6 +12,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using RedisObjectCache;
 
 #if EF5
 using System.Runtime.Caching;
@@ -217,6 +218,7 @@ namespace Z.EntityFramework.Plus
         /// </param>
         public static void ExpireTag(params string[] tags)
         {
+            throw new FhtCachingException("这个方法暂时没有搞定,请大家不要用");
             foreach (var tag in tags)
             {
                 List<string> list;
@@ -228,6 +230,15 @@ namespace Z.EntityFramework.Plus
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// FHT Version where a tag is exactly the redis key
+        /// </summary>
+        /// <param name="tag"></param>
+        public static void ExpireTag(string tag)
+        {
+            Cache.Remove(CachePrefix + tag);
         }
 
         /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
@@ -269,8 +280,7 @@ namespace Z.EntityFramework.Plus
 
             if (IncludeConnectionInCacheKey)
             {
-                //sb.AppendLine(GetConnectionStringForCacheKey(query));
-                sb.Append(GetConnectionStringForCacheKey(query));
+                sb.AppendLine(GetConnectionStringForCacheKey(query));
             }
 #elif EFCORE
             RelationalQueryContext queryContext;
@@ -291,7 +301,8 @@ namespace Z.EntityFramework.Plus
                     throw new Exception(ExceptionMessage.QueryCache_FirstTagNullOrEmpty);
                 }
 
-                sb.AppendLine(tags[0]);
+                //sb.AppendLine(tags[0]);
+                sb.Append(tags[0]);
                 return sb.ToString();
             }
 
@@ -299,7 +310,8 @@ namespace Z.EntityFramework.Plus
             {
                 if (tags == null || tags.Length == 0 || tags.Any(string.IsNullOrEmpty))
                 {
-                    throw new Exception(ExceptionMessage.QueryCache_UseTagsNullOrEmpty);
+                    var msg = string.Format("{0}\r\n{1}", query, ExceptionMessage.QueryCache_UseTagsNullOrEmpty);
+                    throw new Exception(msg);
                 }
 
                 sb.AppendLine(string.Join(";", tags));

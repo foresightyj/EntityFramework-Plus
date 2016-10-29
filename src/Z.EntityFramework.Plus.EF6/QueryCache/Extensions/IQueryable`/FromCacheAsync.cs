@@ -1,15 +1,18 @@
-﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update, Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
-// Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus
-// Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
-// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
-// More projects: http://www.zzzprojects.com/
-// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
+﻿// Description: Entity Framework Bulk Operations & Utilities (EF Bulk SaveChanges, Insert, Update,
+//              Delete, Merge | LINQ Query Cache, Deferred, Filter, IncludeFilter, IncludeOptimize | Audit)
+// Website & Documentation: https://github.com/zzzprojects/Entity-Framework-Plus Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
+// License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE More projects:
+// http://www.zzzprojects.com/ Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 #if NET45
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Z.EntityFramework.Plus.QueryCache.Extensions;
+
 #if EF5 || EF6
+
 using System;
 using System.Data.Entity;
 using System.Runtime.Caching;
@@ -25,20 +28,22 @@ namespace Z.EntityFramework.Plus
     public static partial class QueryCacheExtensions
     {
 #if EF5 || EF6
+
         /// <summary>
-        ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
-        ///     yet, the query is materialized asynchronously and cached before being returned.
+        /// Return the result of the <paramref name="query" /> from the cache. If the query is not
+        /// cached yet, the query is materialized asynchronously and cached before being returned.
         /// </summary>
-        /// <typeparam name="T">The generic type of the query.</typeparam>
-        /// <param name="query">The query to cache in the QueryCacheManager.</param>
-        /// <param name="policy">The policy to use to cache the query.</param>
+        /// <typeparam name="T"> The generic type of the query. </typeparam>
+        /// <param name="query"> The query to cache in the QueryCacheManager. </param>
+        /// <param name="policy"> The policy to use to cache the query. </param>
         /// <param name="tags">
-        ///     A variable-length parameters list containing tags to expire cached
-        ///     entries.
+        /// A variable-length parameters list containing tags to expire cached entries.
         /// </param>
-        /// <returns>The result of the query.</returns>
-        public static Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, CacheItemPolicy policy, params string[] tags) where T : class
+        /// <returns> The result of the query. </returns>
+        public static Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, CacheItemPolicy policy, string firstTag, params string[] tags) where T : class
         {
+            tags = TagsHelper.JoinFirstTagAndRestTags(firstTag, tags);
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var result = Task.Run(() =>
@@ -52,26 +57,29 @@ namespace Z.EntityFramework.Plus
                     QueryCacheManager.AddCacheTag(key, tags);
                 }
 
-                return (IEnumerable<T>) item;
+                return (IEnumerable<T>)item;
             });
 
             return result;
         }
 
         /// <summary>
-        ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
-        ///     yet, the query is materialized asynchronously and cached before being returned.
+        /// Return the result of the <paramref name="query" /> from the cache. If the query is not
+        /// cached yet, the query is materialized asynchronously and cached before being returned.
         /// </summary>
-        /// <typeparam name="T">Generic type parameter.</typeparam>
-        /// <param name="query">The query to cache in the QueryCacheManager.</param>
-        /// <param name="absoluteExpiration">The fixed date and time at which the cache entry will expire.</param>
-        /// <param name="tags">
-        ///     A variable-length parameters list containing tags to expire cached
-        ///     entries.
+        /// <typeparam name="T"> Generic type parameter. </typeparam>
+        /// <param name="query"> The query to cache in the QueryCacheManager. </param>
+        /// <param name="absoluteExpiration">
+        /// The fixed date and time at which the cache entry will expire.
         /// </param>
-        /// <returns>The result of the query.</returns>
-        public static Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, DateTimeOffset absoluteExpiration, params string[] tags) where T : class
+        /// <param name="tags">
+        /// A variable-length parameters list containing tags to expire cached entries.
+        /// </param>
+        /// <returns> The result of the query. </returns>
+        public static Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, DateTimeOffset absoluteExpiration, string firstTag, params string[] tags) where T : class
         {
+            tags = TagsHelper.JoinFirstTagAndRestTags(firstTag, tags);
+
             var key = QueryCacheManager.GetCacheKey(query, tags);
 
             var result = Task.Run(() =>
@@ -85,40 +93,40 @@ namespace Z.EntityFramework.Plus
                     QueryCacheManager.AddCacheTag(key, tags);
                 }
 
-                return (IEnumerable<T>) item;
+                return (IEnumerable<T>)item;
             });
 
             return result;
         }
 
         /// <summary>
-        ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
-        ///     yet, the query is materialized asynchronously and cached before being returned.
+        /// Return the result of the <paramref name="query" /> from the cache. If the query is not
+        /// cached yet, the query is materialized asynchronously and cached before being returned.
         /// </summary>
-        /// <typeparam name="T">Generic type parameter.</typeparam>
-        /// <param name="query">The query to cache in the QueryCacheManager.</param>
+        /// <typeparam name="T"> Generic type parameter. </typeparam>
+        /// <param name="query"> The query to cache in the QueryCacheManager. </param>
         /// <param name="tags">
-        ///     A variable-length parameters list containing tags to expire cached
-        ///     entries.
+        /// A variable-length parameters list containing tags to expire cached entries.
         /// </param>
-        /// <returns>The result of the query.</returns>
-        public static Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, params string[] tags) where T : class
+        /// <returns> The result of the query. </returns>
+        public static Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, string firstTag, params string[] tags) where T : class
         {
-            return query.FromCacheAsync(QueryCacheManager.DefaultCacheItemPolicy, tags);
+            return query.FromCacheAsync(QueryCacheManager.DefaultCacheItemPolicy, firstTag, tags);
         }
+
 #elif EFCORE
+
         /// <summary>
-        ///     Return the result of the <paramref name="query" /> from the cache. If the query is not cached
-        ///     yet, the query is materialized and cached before being returned.
+        /// Return the result of the <paramref name="query" /> from the cache. If the query is not
+        /// cached yet, the query is materialized and cached before being returned.
         /// </summary>
-        /// <typeparam name="T">The generic type of the query.</typeparam>
-        /// <param name="query">The query to cache in the QueryCacheManager.</param>
-        /// <param name="options">The cache entry options to use to cache the query.</param>
+        /// <typeparam name="T"> The generic type of the query. </typeparam>
+        /// <param name="query"> The query to cache in the QueryCacheManager. </param>
+        /// <param name="options"> The cache entry options to use to cache the query. </param>
         /// <param name="tags">
-        ///     A variable-length parameters list containing tags to expire cached
-        ///     entries.
+        /// A variable-length parameters list containing tags to expire cached entries.
         /// </param>
-        /// <returns>The result of the query.</returns>
+        /// <returns> The result of the query. </returns>
         public static Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, MemoryCacheEntryOptions options, params string[] tags) where T : class
         {
             var key = QueryCacheManager.GetCacheKey(query, tags);
@@ -140,17 +148,15 @@ namespace Z.EntityFramework.Plus
         }
 
         /// <summary>
-        ///     Return the result of the <paramref name="query" /> from the cache if possible. Otherwise, materialize
-        ///     asynchronously the query and cache the result
-        ///     before being returned.
+        /// Return the result of the <paramref name="query" /> from the cache if possible. Otherwise,
+        /// materialize asynchronously the query and cache the result before being returned.
         /// </summary>
-        /// <typeparam name="T">Generic type parameter.</typeparam>
-        /// <param name="query">The query to cache.</param>
+        /// <typeparam name="T"> Generic type parameter. </typeparam>
+        /// <param name="query"> The query to cache. </param>
         /// <param name="tags">
-        ///     A variable-length parameters list containing tags to expire cached
-        ///     entries.
+        /// A variable-length parameters list containing tags to expire cached entries.
         /// </param>
-        /// <returns>The result of the query.</returns>
+        /// <returns> The result of the query. </returns>
         public static async Task<IEnumerable<T>> FromCacheAsync<T>(this IQueryable<T> query, params string[] tags) where T : class
         {
             return await query.FromCacheAsync(QueryCacheManager.DefaultMemoryCacheEntryOptions, tags);

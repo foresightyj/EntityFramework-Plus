@@ -99,6 +99,7 @@
     <Compile Include="BatchUpdate\Extensions\Update.cs" />
     <Compile Include="BatchUpdate\Extensions\UpdateAsync.cs" />
     <Compile Include="ExceptionMessage.cs" />
+    <Compile Include="QueryCache\Extensions\TagsHelper.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddToRootOrAppendOrderBy.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderByDescending.cs" />
     <Compile Include="QueryExtensions\QueryAddOrAppendOrder\Extensions\IQueryable`.AddOrAppendOrderBy.cs" />
@@ -274,7 +275,12 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Redis-Object-Cache\src\RedisObjectCache\RedisObjectCache.csproj">
+      <Project>{75512538-31F7-4AB7-87BF-ECBD6BBB96B7}</Project>
+      <Name>RedisObjectCache</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
