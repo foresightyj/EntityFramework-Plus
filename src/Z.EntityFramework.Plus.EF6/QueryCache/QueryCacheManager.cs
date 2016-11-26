@@ -248,7 +248,7 @@ namespace Z.EntityFramework.Plus
         /// <param name="cachedObject"></param>
         public static void UpdateCache(string tag, object cachedObject)
         {
-            Cache.Add(tag, cachedObject, DefaultCacheItemPolicy);
+            Cache.Add(CachePrefix + tag, cachedObject, DefaultCacheItemPolicy);
         }
 
 
