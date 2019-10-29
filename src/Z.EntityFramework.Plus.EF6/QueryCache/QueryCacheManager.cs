@@ -262,6 +262,11 @@ namespace Z.EntityFramework.Plus
         /// <returns>The cache key used to cache or retrieve a query from the QueryCacheManager.</returns>
         public static string GetCacheKey(IQueryable query, string[] tags)
         {
+            if (Logger.IsDebugEnabled)
+            {
+                var text = query.GetObjectQuery().GetCommandTextAndParameters();
+                Logger.DebugFormat("EF Command: {0}\r\nParameters: {1}", text.Item1, text.Item2);
+            }
             if (CacheKeyFactory != null)
             {
                 var cacheKey = CacheKeyFactory(query, tags);

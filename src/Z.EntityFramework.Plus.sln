@@ -1,8 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{14D8985E-0AA8-444A-A32E-D766ABA114D6}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF5", "Z.EntityFramework.Plus.EF5\Z.EntityFramework.Plus.EF5.csproj", "{1B28EFB7-E679-4275-ACA9-DA7CD589A56A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF5.NET40", "Z.EntityFramework.Plus.EF5.NET40\Z.EntityFramework.Plus.EF5.NET40.csproj", "{E4C2AF73-CAEB-4429-BCB6-0A359484E064}"
@@ -11,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF6"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.EntityFramework.Plus.EF6.NET40", "Z.EntityFramework.Plus.EF6.NET40\Z.EntityFramework.Plus.EF6.NET40.csproj", "{AC398EB8-0A31-4D06-A804-84D10B6DA96D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{14D8985E-0AA8-444A-A32E-D766ABA114D6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EF5", "test\Z.Test.EntityFramework.Plus.EF5\Z.Test.EntityFramework.Plus.EF5.csproj", "{149EC03D-4F7D-4EBA-9F24-0777FB7AB7F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EF6", "test\Z.Test.EntityFramework.Plus.EF6\Z.Test.EntityFramework.Plus.EF6.csproj", "{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E}"
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Z.Test.EntityFramework.Plus.EFCore", "test\Z.Test.EntityFramework.Plus.EFCore\Z.Test.EntityFramework.Plus.EFCore.csproj", "{C47F920B-8064-44B0-BF3F-CD29298597A0}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Z.EntityFramework.Plus.EFCore", "Z.EntityFramework.Plus.EFCore\Z.EntityFramework.Plus.EFCore.xproj", "{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FHT.EntityFramework.Plus", "Z.EntityFramework.Plus.EF6\FHT.EntityFramework.Plus.csproj", "{8602CD28-F97B-47EE-BBE6-64361916C92E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,6 +60,10 @@ Global
 		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE726FF5-89DE-42BE-B75D-834A7C1EB6E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8602CD28-F97B-47EE-BBE6-64361916C92E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8602CD28-F97B-47EE-BBE6-64361916C92E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8602CD28-F97B-47EE-BBE6-64361916C92E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8602CD28-F97B-47EE-BBE6-64361916C92E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +72,8 @@ Global
 		{149EC03D-4F7D-4EBA-9F24-0777FB7AB7F2} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
 		{063FA382-DFDA-4BCB-BBB6-AAC04D0ED88E} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
 		{C47F920B-8064-44B0-BF3F-CD29298597A0} = {14D8985E-0AA8-444A-A32E-D766ABA114D6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1F39A65A-70C6-4759-8FE3-190E862ECA3D}
 	EndGlobalSection
 EndGlobal
