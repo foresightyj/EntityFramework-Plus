@@ -13,6 +13,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using log4net;
+using System.IO;
+using Mono.Linq.Expressions;
 #if EF5
 using System.Runtime.Caching;
 using System.Data.EntityClient;
@@ -264,8 +266,18 @@ namespace Z.EntityFramework.Plus
         {
             if (Logger.IsDebugEnabled)
             {
-                var text = query.GetObjectQuery().GetCommandTextAndParameters();
-                Logger.DebugFormat("EF Command: {0}\r\nParameters: {1}", text.Item1, text.Item2);
+                var result = new StringWriter();
+                var csharp = new CSharpWriter(new TextFormatter(result));
+
+                csharp.Write(query.Expression); //looks better than query.Expression.ToString()
+                var pretty = result.ToString();
+                var oq = query.GetObjectQuery();
+                var text = oq.GetCommandTextAndParameters();
+                DbParameterCollection ps = text.Item2;
+                Logger.DebugFormat("EF IQueryable:\r\n{0}", pretty);
+                var parameters = Enumerable.Range(0, ps.Count).Select(i => ps[i]);
+                Logger.DebugFormat("SQL Commands:\r\n{0}", text.Item1);
+                Logger.DebugFormat("SQL Parameters: ({0})", string.Join(", ", parameters.Select(p=> string.Format("{0} = {1}", p.ParameterName, p.Value))));
             }
             if (CacheKeyFactory != null)
             {
