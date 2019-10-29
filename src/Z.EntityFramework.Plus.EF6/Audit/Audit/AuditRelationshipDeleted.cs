@@ -7,12 +7,10 @@
 
 #if EF5 || EF6
 #if EF5
-using System;
 using System.Data;
 using System.Data.Objects;
 
 #elif EF6
-using System;
 using System.Data.Entity.Core;
 using System.Data.Entity.Core.Objects;
 
@@ -35,8 +33,8 @@ namespace Z.EntityFramework.Plus
 #endif
         {
             var entry = audit.Configuration.AuditEntryFactory != null ?
-                audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, AuditEntryState.RelationshipDeleted)) :
-                new AuditEntry();
+audit.Configuration.AuditEntryFactory(new AuditEntryFactoryArgs(audit, objectStateEntry, AuditEntryState.RelationshipDeleted)) :
+new AuditEntry();
 
             entry.Build(audit, objectStateEntry);
             entry.State = AuditEntryState.RelationshipDeleted;
@@ -45,21 +43,14 @@ namespace Z.EntityFramework.Plus
             for (var i = 0; i < values.FieldCount; i++)
             {
                 var relationName = values.GetName(i);
-                var entityKey = (EntityKey) values.GetValue(i);
-                foreach (var keyValue in entityKey.EntityKeyValues)
+                var value = (EntityKey) values.GetValue(i);
+                foreach (var keyValue in value.EntityKeyValues)
                 {
-                    var value = keyValue.Value;
-
-                    if (audit.Configuration.UseNullForDBNullValue && value == DBNull.Value)
-                    {
-                        value = null;
-                    }
-
                     var auditEntryProperty = entry.Parent.Configuration.AuditEntryPropertyFactory != null ?
-                        entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, relationName, keyValue.Key, value, null)) :
-                        new AuditEntryProperty();
+entry.Parent.Configuration.AuditEntryPropertyFactory(new AuditEntryPropertyArgs(entry, objectStateEntry, relationName, keyValue.Key, keyValue.Value, null)) :
+new AuditEntryProperty();
 
-                    auditEntryProperty.Build(entry, relationName, keyValue.Key, value, null);
+                    auditEntryProperty.Build(entry, relationName, keyValue.Key, keyValue.Value, null);
                     entry.Properties.Add(auditEntryProperty);
                 }
             }

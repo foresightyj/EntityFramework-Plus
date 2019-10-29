@@ -3,7 +3,7 @@
 // Forum & Issues: https://github.com/zzzprojects/EntityFramework-Plus/issues
 // License: https://github.com/zzzprojects/EntityFramework-Plus/blob/master/LICENSE
 // More projects: http://www.zzzprojects.com/
-// Copyright © ZZZ Projects Inc. 2014 - 2016. All rights reserved.
+// Copyright ?ZZZ Projects Inc. 2014 - 2016. All rights reserved.
 
 #if FULL || QUERY_FILTER
 #if EF5 || EF6

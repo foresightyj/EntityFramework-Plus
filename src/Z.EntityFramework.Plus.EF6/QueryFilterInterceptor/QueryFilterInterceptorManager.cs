@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Core.Common.CommandTrees;
 using System.Data.Entity.Infrastructure.Interception;
@@ -36,20 +35,15 @@ namespace Z.EntityFramework.Plus
             GlobalFiltersByKey = new ConcurrentDictionary<object, BaseQueryFilterInterceptor>();
             GlobalFilterByType = new ConcurrentDictionary<Type, List<BaseQueryFilterInterceptor>>();
             DbExpressionByHook = new ConcurrentDictionary<string, DbExpression>();
-            DbExpressionParameterByHook = new ConcurrentDictionary<DbExpression, DbParameterCollection>();
         }
 
         /// <summary>Gets the database expression by hook.</summary>
         /// <value>The database expression by hook.</value>
-        public static ConcurrentDictionary<string, DbExpression> DbExpressionByHook { get; }
-
-        /// <summary>Gets the database expression parameter by hook.</summary>
-        /// <value>The database expression parameter by hook.</value>
-        public static ConcurrentDictionary<DbExpression, DbParameterCollection> DbExpressionParameterByHook { get; }
+        public static ConcurrentDictionary<string, DbExpression> DbExpressionByHook { get; private set; }
 
         /// <summary>Gets the global filters.</summary>
         /// <value>The global filters.</value>
-        public static ConcurrentDictionary<object, BaseQueryFilterInterceptor> GlobalFiltersByKey { get; }
+        public static ConcurrentDictionary<object, BaseQueryFilterInterceptor> GlobalFiltersByKey { get; private set; }
 
         /// <summary>Gets or sets the type of the global filter by.</summary>
         /// <value>The type of the global filter by.</value>
@@ -98,19 +92,19 @@ namespace Z.EntityFramework.Plus
             {
                 if (!GlobalFiltersByKey.TryGetValue(key, out filter))
                 {
-                    filter = new QueryFilterInterceptor<T>(queryFilter) {IsDefaultEnabled = isEnabled};
+                    filter = new QueryFilterInterceptor<T>(queryFilter) { IsDefaultEnabled = isEnabled };
                     GlobalFiltersByKey.AddOrUpdate(key, filter, (o, interceptorFilter) => filter);
                 }
             }
 
             // FilterByType
             {
-                if (!GlobalFilterByType.ContainsKey(typeof (T)))
+                if (!GlobalFilterByType.ContainsKey(typeof(T)))
                 {
-                    GlobalFilterByType.AddOrUpdate(typeof (T), new List<BaseQueryFilterInterceptor>(), (type, list) => list);
+                    GlobalFilterByType.AddOrUpdate(typeof(T), new List<BaseQueryFilterInterceptor>(), (type, list) => list);
                 }
 
-                GlobalFilterByType[typeof (T)].Add(filter);
+                GlobalFilterByType[typeof(T)].Add(filter);
             }
 
             ClearAllCache();
@@ -146,7 +140,7 @@ namespace Z.EntityFramework.Plus
         public static IQueryable<T> HookFilter<T>(IQueryable<T> query, string value)
         {
             // CREATE hook
-            var parameter = Expression.Parameter(typeof (T));
+            var parameter = Expression.Parameter(typeof(T));
             var left = Expression.Constant(value);
             var right = Expression.Constant(value);
             var predicate = Expression.Equal(left, right);
@@ -185,7 +179,7 @@ namespace Z.EntityFramework.Plus
 
                 foreach (var setProperty in setProperties)
                 {
-                    var dbSet = (IQueryable) setProperty.GetValue(context, null);
+                    var dbSet = (IQueryable)setProperty.GetValue(context, null);
 
                     // Disable Set Caching
                     {
@@ -209,7 +203,7 @@ namespace Z.EntityFramework.Plus
         public static void ClearAllCache()
         {
             var propertyValues = CacheWeakFilterContext.GetType().GetProperty("Values", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            var values = (List<QueryFilterContextInterceptor>) propertyValues.GetValue(CacheWeakFilterContext, null);
+            var values = (List<QueryFilterContextInterceptor>)propertyValues.GetValue(CacheWeakFilterContext, null);
 
             foreach (var value in values)
             {

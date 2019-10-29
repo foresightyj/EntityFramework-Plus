@@ -46,8 +46,7 @@ namespace Z.EntityFramework.Plus
 
                     if (!ValueFormatterDictionary.TryGetValue(key, out formatter))
                     {
-                        if (EntityValueFormatters.Count > 0)
-                        {
+                       
                             foreach (var formatProperty in EntityValueFormatters)
                             {
                                 formatter = formatProperty(entry.Entity, propertyName);
@@ -57,7 +56,7 @@ namespace Z.EntityFramework.Plus
                                     break;
                                 }
                             }
-                        }
+                        
 
                         ValueFormatterDictionary.TryAdd(key, formatter);
                     }
@@ -69,7 +68,7 @@ namespace Z.EntityFramework.Plus
                 }
             }
 
-            return currentValue != null && currentValue != DBNull.Value ? currentValue.ToString() : null;
+            return currentValue != null ? currentValue.ToString() : null;
         }
     }
 }

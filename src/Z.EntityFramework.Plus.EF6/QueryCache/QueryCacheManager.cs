@@ -12,12 +12,14 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using log4net;
 #if EF5
 using System.Runtime.Caching;
 using System.Data.EntityClient;
 using System.Data.SqlClient;
 
 #elif EF6
+
 using System.Data.Entity.Core.EntityClient;
 using System.Runtime.Caching;
 
@@ -33,6 +35,8 @@ namespace Z.EntityFramework.Plus
     /// <summary>Manage EF+ Query Cache Configuration.</summary>
     public static class QueryCacheManager
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(QueryCacheManager));
+
         /// <summary>Static constructor.</summary>
         static QueryCacheManager()
         {
@@ -49,6 +53,7 @@ namespace Z.EntityFramework.Plus
         }
 
 #if EF5 || EF6
+
         /// <summary>Gets or sets the cache to use for QueryCacheExtensions extension methods.</summary>
         /// <value>The cache to use for QueryCacheExtensions extension methods.</value>
         public static ObjectCache Cache { get; set; }
@@ -151,7 +156,7 @@ namespace Z.EntityFramework.Plus
 
         /// <summary>Gets the dictionary cache tags used to store tags and corresponding cached keys.</summary>
         /// <value>The cache tags used to store tags and corresponding cached keys.</value>
-        public static ConcurrentDictionary<string, List<string>> CacheTags { get; }
+        public static ConcurrentDictionary<string, List<string>> CacheTags { get; private set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object use first tag as cache key.
@@ -172,7 +177,7 @@ namespace Z.EntityFramework.Plus
         {
             foreach (var tag in tags)
             {
-                CacheTags.AddOrUpdate(CachePrefix + tag, x => new List<string> {cacheKey}, (x, list) =>
+                CacheTags.AddOrUpdate(CachePrefix + tag, x => new List<string> { cacheKey }, (x, list) =>
                 {
                     if (!list.Contains(cacheKey))
                     {
@@ -185,6 +190,7 @@ namespace Z.EntityFramework.Plus
         }
 
 #if !EFCORE
+
         /// <summary>Expire all cached objects && tag.</summary>
         public static void ExpireAll()
         {
@@ -203,6 +209,7 @@ namespace Z.EntityFramework.Plus
                 Cache.Remove(item);
             }
         }
+
 #endif
 
         /// <summary>Expire all cached keys linked to specified tags.</summary>
@@ -212,6 +219,7 @@ namespace Z.EntityFramework.Plus
         /// </param>
         public static void ExpireTag(params string[] tags)
         {
+            throw new Exception("这个方法暂时没有搞定,请大家不要用");
             foreach (var tag in tags)
             {
                 List<string> list;
@@ -224,6 +232,29 @@ namespace Z.EntityFramework.Plus
                 }
             }
         }
+
+        /// <summary>
+        /// FHT Version where a tag is exactly the redis key
+        /// </summary>
+        /// <param name="tag"></param>
+        public static void ExpireTag(string tag)
+        {
+            if (Logger.IsDebugEnabled)
+            {
+                Logger.DebugFormat("Expire Redis Key: {0}", tag);
+            }
+            Cache.Remove(CachePrefix + tag);
+        }
+
+        /// <summary>
+        /// FHT，直接更新缓存
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="cachedObject"></param>
+        //public static void UpdateCache(string tag, object cachedObject)
+        //{
+        //    Cache.Add(CachePrefix + tag, cachedObject, DefaultCacheItemPolicy);
+        //}
 
         /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
         /// <param name="query">The query to cache or retrieve from the QueryCacheManager.</param>
@@ -259,7 +290,8 @@ namespace Z.EntityFramework.Plus
 
             var objectQuery = query.GetObjectQuery();
 
-            sb.AppendLine(CachePrefix);
+            //sb.AppendLine(CachePrefix);
+            sb.Append(CachePrefix);
 
             if (IncludeConnectionInCacheKey)
             {
@@ -284,7 +316,8 @@ namespace Z.EntityFramework.Plus
                     throw new Exception(ExceptionMessage.QueryCache_FirstTagNullOrEmpty);
                 }
 
-                sb.AppendLine(tags[0]);
+                //sb.AppendLine(tags[0]);
+                sb.Append(tags[0]);
                 return sb.ToString();
             }
 
@@ -292,7 +325,8 @@ namespace Z.EntityFramework.Plus
             {
                 if (tags == null || tags.Length == 0 || tags.Any(string.IsNullOrEmpty))
                 {
-                    throw new Exception(ExceptionMessage.QueryCache_UseTagsNullOrEmpty);
+                    var msg = string.Format("{0}\r\n{1}", query, ExceptionMessage.QueryCache_UseTagsNullOrEmpty);
+                    throw new Exception(msg);
                 }
 
                 sb.AppendLine(string.Join(";", tags));
@@ -341,11 +375,11 @@ namespace Z.EntityFramework.Plus
         public static string GetConnectionStringForCacheKey(IQueryable query)
         {
 #if EF5 || EF6
-            var connection = ((EntityConnection) query.GetObjectQuery().Context.Connection).GetStoreConnection();
+            var connection = ((EntityConnection)query.GetObjectQuery().Context.Connection).GetStoreConnection();
 
             // FORCE database name in case "ChangeDatabase()" method is used
-            var connectionString = string.Concat(connection.DataSource ?? "", 
-                Environment.NewLine, 
+            var connectionString = string.Concat(connection.DataSource ?? "",
+                Environment.NewLine,
                 connection.Database ?? "",
                 Environment.NewLine,
                 connection.ConnectionString ?? "");
@@ -363,15 +397,14 @@ namespace Z.EntityFramework.Plus
             var connection = queryContext.Connection.DbConnection;
 
             // FORCE database name in case "ChangeDatabase()" method is used
-            var connectionString = string.Concat(connection.DataSource ?? "", 
-                Environment.NewLine, 
+            var connectionString = string.Concat(connection.DataSource ?? "",
+                Environment.NewLine,
                 connection.Database ?? "",
                 Environment.NewLine,
                 connection.ConnectionString ?? "");
             return connectionString;
         }
 #endif
-
 
         /// <summary>Gets cached keys used to cache or retrieve a query from the QueryCacheManager.</summary>
         /// <typeparam name="T">Generic type parameter.</typeparam>
